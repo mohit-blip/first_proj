@@ -1,7 +1,10 @@
 from collections.abc import Iterable
+import time as t
+from datetime import *
 from logging import NullHandler
 import os
 import itertools
+import threading
 
 
 class Samplefunc():
@@ -14,8 +17,7 @@ class Samplefunc():
         output = [" ".join(i) for i in a]
         return output
 
-
-    def flatten_list(self,data_in,ignore_type=(str,bytes)):
+    def flatten_list(self, data_in, ignore_type=(str,bytes)):
         for i in data_in:
             print(i)
             if isinstance(i,Iterable) and not isinstance(i,ignore_type):
@@ -23,7 +25,7 @@ class Samplefunc():
             else:
                 yield i
 
-    def file_read(self,file_path):
+    def file_read(self, file_path):
         flag = 0
         if os.path.isfile(file_path) == True:
             file = open(file_path, "r")
@@ -58,11 +60,27 @@ class Samplefunc():
                 file.close()
            except Exception as e:
                 print("couldn't create file because of {}, do the needful".format(e))
-     
+
+    def scenarios(self, dut):
+        now = datetime.now()
+        current_time = now.strftime("%H:%M:%S")
+        print(f"test is running on {dut} at {current_time}")
+        t.sleep(5)
+        print(f"test completed on {dut} at {current_time}")
+
+    def create_thread(self, duts):
+        threads = []
+        for dut in duts:
+            th = threading.Thread(target = self.scenarios, args = (dut,))
+            th.start()
+            threads.append(th)
+        for th in threads:
+            th.join()
     
 
 obj1 = Samplefunc()
-print(obj1.generate_combination(2,["jan","feb","march","april"]))
+print(obj1.generate_combination(2,[["dut1","dut2","dut3"]]))
 obj1.file_read(r"C:\Users\Mohit Ranjan Sahoo\PycharmProjects\all_practice\pyexcel\poems.txt")
 print(list(obj1.flatten_list([1,2,3,["hello"],{"name","place"},[23,4,5,6,[1,2,[67,78]]]])))
+print(obj1.create_thread(["tanjin101","tanjin114","tanjin105","tanjin109"]))
 
