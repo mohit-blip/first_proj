@@ -5,6 +5,7 @@ from logging import NullHandler
 import os
 import itertools
 import threading
+import asyncio
 
 
 class Samplefunc():
@@ -64,10 +65,37 @@ class Samplefunc():
     def scenarios(self, dut):
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
-        print(f"test is running on {dut} at {current_time}")
+        pid = threading.get_native_id()
+        print(f"test is running on {dut} at {current_time} process id is: {pid}")
         t.sleep(5)
-        print(f"test completed on {dut} at {current_time}")
+        print(f"test is completed on {dut} at {current_time} process id is: {pid}")
 
+    async def say_after(self,delay,what):
+            await asyncio.sleep(delay)
+            print(what)
+    async def sequence_test_run(self,dut):
+             start = t.time()
+             print(f"started at {t.strftime('%X')} for {dut}")
+             task1 = asyncio.create_task(
+             self.say_after(2, 'test case started and running on {}'.format(dut)))
+             print("test in progress")
+             task2 = asyncio.create_task(
+             self.say_after(4, 'warning: test is running on {}'.format(dut)))
+             await task1
+             await task2
+             print(f"finished at {t.strftime('%X')}")
+             end = t.time()
+             total = end - start
+             print(f"total time taken for test in seconds {total}")
+             
+    
+
+    def sequential_exec(self,duts):
+        for dut in duts:
+             k = dut
+             print("test started on {}".format(k))
+             asyncio.run(self.sequence_test_run(dut))    
+        
     def create_thread(self, duts):
         threads = []
         for dut in duts:
@@ -76,11 +104,11 @@ class Samplefunc():
             threads.append(th)
         for th in threads:
             th.join()
-    
 
 obj1 = Samplefunc()
 print(obj1.generate_combination(2,[["dut1","dut2","dut3"]]))
 obj1.file_read(r"C:\Users\Mohit Ranjan Sahoo\PycharmProjects\all_practice\pyexcel\poems.txt")
 print(list(obj1.flatten_list([1,2,3,["hello"],{"name","place"},[23,4,5,6,[1,2,[67,78]]]])))
 print(obj1.create_thread(["tanjin101","tanjin114","tanjin105","tanjin109"]))
+print(obj1.sequential_exec(["tanjin101","tanjin114","tanjin105","tanjin109"]))
 
