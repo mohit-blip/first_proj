@@ -73,6 +73,7 @@ class Samplefunc():
     async def say_after(self,delay,what):
             await asyncio.sleep(delay)
             print(what)
+            
     async def sequence_test_run(self,dut):
              start = t.time()
              print(f"started at {t.strftime('%X')} for {dut}")
@@ -88,8 +89,6 @@ class Samplefunc():
              total = end - start
              print(f"total time taken for test in seconds {total}")
              
-    
-
     def sequential_exec(self,duts):
         for dut in duts:
              k = dut
