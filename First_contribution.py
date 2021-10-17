@@ -6,7 +6,7 @@ import os
 import itertools
 import threading
 import asyncio
-
+import concurrent.futures
 
 class Samplefunc():
 
@@ -103,6 +103,20 @@ class Samplefunc():
             threads.append(th)
         for th in threads:
             th.join()
+    def runtest(self,dut):
+        print(f"Test started with the process id {os.getpid()} on {t.strftime('%X')} on {dut}")
+
+    def concurrent_run(self, duts):
+        result_list = []
+        for dut in duts:
+           with concurrent.futures.ThreadPoolExecutor(max_workers = 3) as executor:
+               result_list.append(executor.submit(self.runtest,dut))
+        for future in concurrent.futures.as_completed(result_list):
+            try:
+                result = future.result()
+            except Exception as e:
+                print(e)
+        return result
 
 obj1 = Samplefunc()
 print(obj1.generate_combination(2,[["dut1","dut2","dut3"]]))
@@ -110,4 +124,5 @@ obj1.file_read(r"C:\Users\Mohit Ranjan Sahoo\PycharmProjects\all_practice\pyexce
 print(list(obj1.flatten_list([1,2,3,["hello"],{"name","place"},[23,4,5,6,[1,2,[67,78]]]])))
 print(obj1.create_thread(["tanjin101","tanjin114","tanjin105","tanjin109"]))
 print(obj1.sequential_exec(["tanjin101","tanjin114","tanjin105","tanjin109"]))
+print(obj1.concurrent_run(["tanjin101","tanjin114","tanjin105","tanjin109"]))
 
